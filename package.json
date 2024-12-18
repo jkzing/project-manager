@@ -1,0 +1,40 @@
+{
+  "name": "@zjk-dev/gpm",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "gpm": "./bin/cli.js"
+  },
+  "files": ["bin", "dist"],
+  "scripts": {
+    "build": "rslib build",
+    "check": "biome check --write",
+    "dev": "rslib build --watch",
+    "format": "biome format --write",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "simple-git": "^3.22.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.3",
+    "@rslib/core": "^0.1.4",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

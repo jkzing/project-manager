@@ -6,8 +6,8 @@ import os from 'node:os';
 export interface HostConfig {
   alias: string;
   hostname: string;
-  preferSSH?: boolean;
   baseDir?: string;
+  preferSSH?: boolean;
 }
 
 export interface Config {
@@ -40,7 +40,7 @@ function resolveBaseDir(baseDir: string, rootBaseDir: string): string {
 
 export async function getConfig(): Promise<Config> {
   try {
-    const configPath = path.join(os.homedir(), '.gpm.toml');
+    const configPath = path.join(os.homedir(), '.lgrm.toml');
     const content = await fs.readFile(configPath, 'utf-8');
     const rawConfig = TOML.parse(content) as Partial<Config>;
 

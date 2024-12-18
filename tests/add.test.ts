@@ -35,6 +35,9 @@ describe('add command', () => {
     vi.mocked(fs.mkdir).mockResolvedValue(undefined);
     // Mock simpleGit
     vi.mocked(simpleGit).mockReturnValue({
+      outputHandler() {
+        return this;
+      },
       clone: vi.fn().mockResolvedValue(undefined),
     } as any);
   });

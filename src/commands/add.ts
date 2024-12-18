@@ -73,8 +73,8 @@ function getTargetDir(
   hostConfig?: HostConfig,
 ): string {
   // 使用主机特定的 baseDir，如果没有则使用全局 baseDir
-  const baseDir = hostConfig?.baseDir || config.baseDir;
-  return path.join(baseDir, hostname, owner, repo);
+  const baseDir = hostConfig?.baseDir || path.join(config.baseDir, hostname);
+  return path.join(baseDir, owner, repo);
 }
 
 interface AddOptions {

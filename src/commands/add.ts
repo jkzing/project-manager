@@ -1,4 +1,4 @@
-import simpleGit from 'simple-git';
+import simpleGit, { type SimpleGitProgressEvent } from 'simple-git';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import {
@@ -113,7 +113,14 @@ export async function add(repoUrl: string, options: AddOptions = {}) {
     logger.step(3, 3, 'Cloning repository...');
 
     if (!dryRun) {
-      const git = simpleGit();
+      const git = simpleGit({
+        progress: ({ method, stage, progress }: SimpleGitProgressEvent) => {
+          // This function needs to stay here, otherwise outputHandler will not be called when cloning
+        },
+      }).outputHandler((_command, stdout, stderr, _args) => {
+        stdout.pipe(process.stdout);
+        stderr.pipe(process.stderr); // For git clone, the "remote:" messages are in stderr
+      });
       await git.clone(gitUrl, targetDir);
       logger.success('Repository cloned successfully!');
     } else {

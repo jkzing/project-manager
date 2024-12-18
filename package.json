@@ -1,6 +1,6 @@
 {
   "name": "lgrm",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "type": "module",
   "exports": {
     ".": {
@@ -24,7 +24,8 @@
     "check": "biome check --write",
     "dev": "rslib build --watch",
     "format": "biome format --write",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "rm -rf dist && pnpm run build"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",

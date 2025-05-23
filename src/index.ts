@@ -3,7 +3,7 @@ import { add } from './commands/add';
 
 export function runCli() {
   program
-    .name('lgrm')
+    .name('vpm')
     .description(
       'Git Project Manager - A tool to manage local git repositories',
     );

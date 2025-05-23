@@ -1,6 +1,6 @@
-# lgrm
+# @v3b/project-manager
 
-Local Git Repositories Manager - A tool to manage local git repositories.
+Local Project Manager - A tool to manage local projects.
 
 <br>
 

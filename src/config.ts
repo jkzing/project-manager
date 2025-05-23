@@ -40,7 +40,7 @@ function resolveBaseDir(baseDir: string, rootBaseDir: string): string {
 
 export async function getConfig(): Promise<Config> {
   try {
-    const configPath = path.join(os.homedir(), '.lgrm.toml');
+    const configPath = path.join(os.homedir(), '.vpm.toml');
     const content = await fs.readFile(configPath, 'utf-8');
     const rawConfig = TOML.parse(content) as Partial<Config>;
 

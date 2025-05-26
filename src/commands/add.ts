@@ -9,6 +9,7 @@ import {
   type Config,
 } from '../config';
 import { logger } from '../utils/logger';
+import { saveProjectInfo } from '../utils/cache';
 
 interface ParsedRepo {
   hostname: string;
@@ -122,6 +123,16 @@ export async function add(repoUrl: string, options: AddOptions = {}) {
         stderr.pipe(process.stderr); // For git clone, the "remote:" messages are in stderr
       });
       await git.clone(gitUrl, targetDir);
+
+      // Save project information to cache
+      await saveProjectInfo({
+        hostname,
+        owner,
+        repo,
+        path: targetDir,
+        addedAt: new Date().toISOString(),
+      });
+
       logger.success('Repository cloned successfully!');
     } else {
       logger.info(`Would clone ${gitUrl} to ${targetDir}`);

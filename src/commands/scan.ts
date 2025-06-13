@@ -103,7 +103,9 @@ async function scanDirectory(
       }
     }
   } catch (error) {
-    logger.error(`Error scanning directory ${dirPath}: ${(error as Error).message}`);
+    throw new Error(`Error scanning directory ${dirPath}: ${(error as Error).message}`, {
+      cause: error,
+    });
   }
 }
 

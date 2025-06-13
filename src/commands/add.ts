@@ -90,56 +90,60 @@ export async function add(repoUrl: string, options: AddOptions = {}) {
       logger.warn('Dry run mode - no changes will be made');
     }
 
-    logger.info(`Initializing repository clone from ${repoUrl}`);
-    const config = await getConfig();
+    await logger.group('Repository Clone', async () => {
+      logger.info(`Initializing repository clone from ${repoUrl}`);
+      const config = await getConfig();
 
-    logger.step(1, 3, 'Parsing repository URL...');
-    const { hostname, owner, repo, hostConfig, isAlias } = parseRepoUrl(
-      repoUrl,
-      config,
-    );
+      logger.step(1, 4, 'Parsing repository URL...');
+      const { hostname, owner, repo, hostConfig, isAlias } = parseRepoUrl(
+        repoUrl,
+        config,
+      );
 
-    const targetDir = getTargetDir(config, hostname, owner, repo, hostConfig);
-    logger.step(2, 3, `Creating directory: ${targetDir}`);
+      const targetDir = getTargetDir(config, hostname, owner, repo, hostConfig);
+      logger.step(2, 4, `Creating directory: ${targetDir}`);
 
-    if (!dryRun) {
-      await fs.mkdir(targetDir, { recursive: true });
-    }
+      if (!dryRun) {
+        await fs.mkdir(targetDir, { recursive: true });
+      }
 
-    const shouldUseSSH = hostConfig?.preferSSH ?? false;
-    const gitUrl = isAlias
-      ? constructGitUrl(hostname, owner, repo, shouldUseSSH)
-      : repoUrl;
+      const shouldUseSSH = hostConfig?.preferSSH ?? false;
+      const gitUrl = isAlias
+        ? constructGitUrl(hostname, owner, repo, shouldUseSSH)
+        : repoUrl;
 
-    logger.step(3, 3, 'Cloning repository...');
+      logger.step(3, 4, 'Cloning repository...');
 
-    if (!dryRun) {
-      const git = simpleGit({
-        progress: ({ method, stage, progress }: SimpleGitProgressEvent) => {
-          // This function needs to stay here, otherwise outputHandler will not be called when cloning
-        },
-      }).outputHandler((_command, stdout, stderr, _args) => {
-        stdout.pipe(process.stdout);
-        stderr.pipe(process.stderr); // For git clone, the "remote:" messages are in stderr
-      });
-      await git.clone(gitUrl, targetDir);
+      if (!dryRun) {
+        const git = simpleGit({
+          progress: ({ method, stage, progress }: SimpleGitProgressEvent) => {
+            // This function needs to stay here, otherwise outputHandler will not be called when cloning
+          },
+        }).outputHandler((_command, stdout, stderr, _args) => {
+          stdout.pipe(process.stdout);
+          stderr.pipe(process.stderr);
+        });
 
-      // Save project information to cache
-      await saveProjectInfo({
-        hostname,
-        owner,
-        repo,
-        path: targetDir,
-        addedAt: new Date().toISOString(),
-      });
+        await git.clone(gitUrl, targetDir);
 
-      logger.success('Repository cloned successfully!');
-    } else {
-      logger.info(`Would clone ${gitUrl} to ${targetDir}`);
-      logger.success('Dry run completed successfully!');
-    }
+        // Save project information to cache
+        logger.step(4, 4, 'Saving project information...');
+        await saveProjectInfo({
+          hostname,
+          owner,
+          repo,
+          path: targetDir,
+          addedAt: new Date().toISOString(),
+        });
 
-    logger.info(`Location: ${targetDir}`);
+        logger.success('Repository cloned successfully!');
+      } else {
+        logger.info(`Would clone ${gitUrl} to ${targetDir}`);
+        logger.success('Dry run completed successfully!');
+      }
+
+      logger.info(`Location: ${targetDir}`);
+    });
   } catch (error) {
     logger.error((error as Error).message);
     throw error;

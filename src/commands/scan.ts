@@ -92,7 +92,7 @@ async function scanDirectory(
               });
             }
 
-            logger.info(`Found Git repository: ${owner}/${repo} at ${fullPath}`);
+            logger.info(`Found: ${owner}/${repo.trim()}`);
           }
           // 如果已经是 git 仓库，则不再递归其子目录
           continue;
@@ -117,19 +117,22 @@ export async function scan(targetDir: string, options: ScanOptions = {}) {
       logger.warn('Dry run mode - no changes will be made');
     }
 
-    logger.info(`Scanning directory: ${targetDir}`);
-    logger.info(`Maximum depth: ${depth}`);
+    await logger.group('Directory Scan', async () => {
+      logger.info(`Scanning directory: ${targetDir}`);
+      logger.info(`Maximum depth: ${depth}`);
 
-    const config = await getConfig();
-    const absolutePath = path.resolve(targetDir);
+      const config = await getConfig();
+      const absolutePath = path.resolve(targetDir);
 
-    await scanDirectory(absolutePath, 0, depth, options);
+      let foundRepos = 0;
+      await scanDirectory(absolutePath, 0, depth, options);
 
-    if (dryRun) {
-      logger.success('Dry run completed successfully!');
-    } else {
-      logger.success('Scan completed successfully!');
-    }
+      if (dryRun) {
+        logger.success('Dry run completed successfully!');
+      } else {
+        logger.success(`Scan completed successfully! Found ${foundRepos} repositories.`);
+      }
+    });
   } catch (error) {
     logger.error((error as Error).message);
     throw error;

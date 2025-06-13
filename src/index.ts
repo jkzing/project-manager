@@ -1,6 +1,7 @@
 import { program } from 'commander';
 import { add } from './commands/add';
 import { scan } from './commands/scan';
+import { list } from './commands/list';
 
 export function runCli() {
   program
@@ -23,6 +24,14 @@ export function runCli() {
     .option('-d, --depth <number>', 'Maximum directory depth to scan', '5')
     .option('--dry-run', 'Show what would be done without actually adding to cache')
     .action(scan);
+
+  program
+    .command('list')
+    .description('List all managed projects')
+    .option('-h, --host <hostname>', 'Filter projects by hostname')
+    .option('-d, --dir <directory>', 'Filter projects by directory')
+    .option('-f, --format <format>', 'Output format (table or tree)', 'table')
+    .action(list);
 
   program.parse();
 }

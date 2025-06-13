@@ -44,7 +44,7 @@ async function getGitRepoInfo(dirPath: string) {
 
     // Parse remote URL to get hostname, owner, and repo
     const urlPattern = /(?:https?:\/\/|git@)([^/:]+)[/:]([^/]+)\/([^/]+?)(?:\.git)?$/;
-    const match = remote.match(urlPattern);
+    const match = remote.trim().match(urlPattern);
 
     if (!match) {
       return null;
@@ -92,7 +92,7 @@ async function scanDirectory(
               });
             }
 
-            logger.info(`Found: ${owner}/${repo.trim()}`);
+            logger.info(`Found: ${owner}/${repo}`);
           }
           // 如果已经是 git 仓库，则不再递归其子目录
           continue;

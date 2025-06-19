@@ -5,7 +5,7 @@ import simpleGit from 'simple-git';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-// Mock 依赖
+// Mock dependencies
 vi.mock('simple-git');
 vi.mock('node:fs/promises');
 vi.mock('../src/config', { spy: true });
@@ -46,13 +46,13 @@ describe('add command', () => {
     const url = 'https://github.com/owner/repo';
     await add(url);
 
-    // 验证目录创建
+    // Verify directory creation
     expect(fs.mkdir).toHaveBeenCalledWith(
       path.join('/home/user/workspace', 'github.com', 'owner', 'repo'),
       { recursive: true },
     );
 
-    // 验证 git clone
+    // Verify git clone
     const git = simpleGit();
     expect(git.clone).toHaveBeenCalledWith(
       url,
@@ -64,13 +64,13 @@ describe('add command', () => {
     const url = 'gh:owner/repo';
     await add(url);
 
-    // 验证目录创建
+    // Verify directory creation
     expect(fs.mkdir).toHaveBeenCalledWith(
       path.join('/home/user/workspace', 'github.com', 'owner', 'repo'),
       { recursive: true },
     );
 
-    // 验证使用 SSH URL 进行克隆
+    // Verify using SSH URL for cloning
     const git = simpleGit();
     expect(git.clone).toHaveBeenCalledWith(
       'git@github.com:owner/repo.git',

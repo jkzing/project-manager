@@ -20,7 +20,7 @@ interface ParsedRepo {
 }
 
 function parseRepoUrl(url: string, config: Config): ParsedRepo {
-  // 首先尝试解析别名格式 alias:owner/repo
+  // First try to parse alias format alias:owner/repo
   const aliasPattern = /^([^:@]+):([^/]+)\/([^/]+)$/;
   const aliasMatch = url.match(aliasPattern);
 
@@ -39,7 +39,7 @@ function parseRepoUrl(url: string, config: Config): ParsedRepo {
     };
   }
 
-  // 然后尝试解析标准 git URL
+  // Then try to parse standard git URL
   const urlPattern =
     /(?:https?:\/\/|git@)([^/:]+)[/:]([^/]+)\/([^/]+?)(?:\.git)?$/;
   const urlMatch = url.match(urlPattern);
@@ -73,7 +73,7 @@ function getTargetDir(
   repo: string,
   hostConfig?: HostConfig,
 ): string {
-  // 使用主机特定的 baseDir，如果没有则使用全局 baseDir
+  // Use host-specific baseDir, if not available use global baseDir
   const baseDir = hostConfig?.baseDir || path.join(config.baseDir, hostname);
   return path.join(baseDir, owner, repo);
 }

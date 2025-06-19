@@ -94,7 +94,7 @@ async function scanDirectory(
 
             logger.info(`Found: ${owner}/${repo}`);
           }
-          // 如果已经是 git 仓库，则不再递归其子目录
+          // If it's already a git repository, don't recursively scan its subdirectories
           continue;
         }
 

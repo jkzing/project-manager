@@ -2,6 +2,7 @@ import { program } from 'commander';
 import { add } from './commands/add';
 import { scan } from './commands/scan';
 import { list } from './commands/list';
+import { go } from './commands/go';
 
 export function runCli() {
   program
@@ -32,6 +33,12 @@ export function runCli() {
     .option('-d, --dir <directory>', 'Filter projects by directory')
     .option('-f, --format <format>', 'Output format (table or tree)', 'table')
     .action(list);
+
+  program
+    .command('go')
+    .description('Navigate to a project directory by keyword')
+    .argument('<keyword>', 'Keyword to search for in project names')
+    .action(go);
 
   program.parse();
 }

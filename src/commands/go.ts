@@ -3,6 +3,7 @@ import { logger } from '../utils/logger';
 import inquirer from 'inquirer';
 import path from 'node:path';
 import chalk from 'chalk';
+import clipboardy from 'clipboardy';
 
 function matchProject(project: { hostname: string; owner: string; repo: string; path: string }, keyword: string): boolean {
   const searchText = `${project.hostname} ${project.owner} ${project.repo}`.toLowerCase();
@@ -11,6 +12,21 @@ function matchProject(project: { hostname: string; owner: string; repo: string; 
 
 function formatProjectChoice(project: { hostname: string; owner: string; repo: string; path: string }): string {
   return `${chalk.cyan(project.hostname)}/${chalk.yellow(project.owner)}/${chalk.green(project.repo)}`;
+}
+
+async function outputCdCommand(projectPath: string) {
+  const cdCommand = `cd "${projectPath}"`;
+
+  // Output cd command for shell to execute
+  process.stdout.write(`${cdCommand}\n`);
+
+  try {
+    // Copy to clipboard
+    await clipboardy.write(cdCommand);
+    logger.success('Command copied to clipboard!');
+  } catch (error) {
+    logger.warn('Failed to copy command to clipboard');
+  }
 }
 
 export async function go(keyword: string) {
@@ -31,7 +47,7 @@ export async function go(keyword: string) {
       projects.forEach(project => {
         logger.info(`  ${formatProjectChoice(project)}`);
       });
-      return;
+      process.exit(1);
     }
 
     if (matchedProjects.length === 1) {
@@ -40,9 +56,7 @@ export async function go(keyword: string) {
       logger.info(`Navigating to ${formatProjectChoice(project)}`);
       logger.info(`Path: ${project.path}`);
 
-      // Change directory
-      process.chdir(project.path);
-      logger.success(`Successfully navigated to ${project.path}`);
+      await outputCdCommand(project.path);
     } else {
       // Multiple matches, show selection
       logger.info(`Found ${matchedProjects.length} projects matching "${keyword}":`);
@@ -64,9 +78,7 @@ export async function go(keyword: string) {
       logger.info(`Navigating to ${formatProjectChoice(selectedProject)}`);
       logger.info(`Path: ${selectedProject.path}`);
 
-      // Change directory
-      process.chdir(selectedProject.path);
-      logger.success(`Successfully navigated to ${selectedProject.path}`);
+      await outputCdCommand(selectedProject.path);
     }
   } catch (error) {
     logger.error((error as Error).message);

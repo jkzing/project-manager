@@ -2,8 +2,6 @@
 
 A tool to manage your local projects.
 
-<br>
-
 > 🤖 Code of this project is generated via Cursor.
 
 ## Features

@@ -18,10 +18,7 @@
   "engines": {
     "node": ">=20"
   },
-  "files": [
-    "bin",
-    "dist"
-  ],
+  "files": ["bin", "dist"],
   "scripts": {
     "build": "rslib build",
     "check": "biome check --write",

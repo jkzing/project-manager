@@ -1,8 +1,8 @@
+import path from 'node:path';
+import chalk from 'chalk';
 import { getConfig } from '../config';
 import { getAllProjects } from '../utils/cache';
 import { logger } from '../utils/logger';
-import path from 'node:path';
-import chalk from 'chalk';
 
 interface ListOptions {
   host?: string;
@@ -25,13 +25,37 @@ function formatPath(projectPath: string, baseDir: string): string {
   return path.relative(baseDir, projectPath);
 }
 
-function printTable(projects: Array<{ hostname: string; owner: string; repo: string; path: string; addedAt: string }>, baseDir: string) {
+function printTable(
+  projects: Array<{
+    hostname: string;
+    owner: string;
+    repo: string;
+    path: string;
+    addedAt: string;
+  }>,
+  baseDir: string,
+) {
   // Calculate column widths
-  const hostnameWidth = Math.max('Host'.length, ...projects.map(p => p.hostname.length));
-  const ownerWidth = Math.max('Owner'.length, ...projects.map(p => p.owner.length));
-  const repoWidth = Math.max('Repository'.length, ...projects.map(p => p.repo.length));
-  const pathWidth = Math.max('Path'.length, ...projects.map(p => formatPath(p.path, baseDir).length));
-  const dateWidth = Math.max('Added At'.length, ...projects.map(p => formatDate(p.addedAt).length));
+  const hostnameWidth = Math.max(
+    'Host'.length,
+    ...projects.map((p) => p.hostname.length),
+  );
+  const ownerWidth = Math.max(
+    'Owner'.length,
+    ...projects.map((p) => p.owner.length),
+  );
+  const repoWidth = Math.max(
+    'Repository'.length,
+    ...projects.map((p) => p.repo.length),
+  );
+  const pathWidth = Math.max(
+    'Path'.length,
+    ...projects.map((p) => formatPath(p.path, baseDir).length),
+  );
+  const dateWidth = Math.max(
+    'Added At'.length,
+    ...projects.map((p) => formatDate(p.addedAt).length),
+  );
 
   // Print header
   const header = [
@@ -59,28 +83,43 @@ function printTable(projects: Array<{ hostname: string; owner: string; repo: str
   }
 }
 
-function printTree(projects: Array<{ hostname: string; owner: string; repo: string; path: string; addedAt: string }>, baseDir: string) {
+function printTree(
+  projects: Array<{
+    hostname: string;
+    owner: string;
+    repo: string;
+    path: string;
+    addedAt: string;
+  }>,
+  baseDir: string,
+) {
   // Group projects by hostname
-  const groupedProjects = projects.reduce((acc, project) => {
-    if (!acc[project.hostname]) {
-      acc[project.hostname] = [];
-    }
-    acc[project.hostname].push(project);
-    return acc;
-  }, {} as Record<string, typeof projects>);
+  const groupedProjects = projects.reduce(
+    (acc, project) => {
+      if (!acc[project.hostname]) {
+        acc[project.hostname] = [];
+      }
+      acc[project.hostname].push(project);
+      return acc;
+    },
+    {} as Record<string, typeof projects>,
+  );
 
   // Print tree structure
   for (const [hostname, hostProjects] of Object.entries(groupedProjects)) {
     logger.info(chalk.cyan(hostname));
 
     // Group by owner
-    const ownerGroups = hostProjects.reduce((acc, project) => {
-      if (!acc[project.owner]) {
-        acc[project.owner] = [];
-      }
-      acc[project.owner].push(project);
-      return acc;
-    }, {} as Record<string, typeof hostProjects>);
+    const ownerGroups = hostProjects.reduce(
+      (acc, project) => {
+        if (!acc[project.owner]) {
+          acc[project.owner] = [];
+        }
+        acc[project.owner].push(project);
+        return acc;
+      },
+      {} as Record<string, typeof hostProjects>,
+    );
 
     for (const [owner, ownerProjects] of Object.entries(ownerGroups)) {
       logger.info(`  ${chalk.yellow(owner)}`);
@@ -105,11 +144,13 @@ export async function list(options: ListOptions = {}) {
     // Filter projects based on options
     let filteredProjects = projects;
     if (host) {
-      filteredProjects = filteredProjects.filter(p => p.hostname === host);
+      filteredProjects = filteredProjects.filter((p) => p.hostname === host);
     }
     if (dir) {
       const targetDir = path.resolve(dir);
-      filteredProjects = filteredProjects.filter(p => p.path.startsWith(targetDir));
+      filteredProjects = filteredProjects.filter((p) =>
+        p.path.startsWith(targetDir),
+      );
     }
 
     if (filteredProjects.length === 0) {
@@ -117,15 +158,13 @@ export async function list(options: ListOptions = {}) {
       return;
     }
 
-    await logger.group('Project List', async () => {
-      logger.info(`Found ${filteredProjects.length} projects`);
+    logger.info(`Found ${filteredProjects.length} projects`);
 
-      if (format === 'table') {
-        printTable(filteredProjects, config.baseDir);
-      } else {
-        printTree(filteredProjects, config.baseDir);
-      }
-    });
+    if (format === 'table') {
+      printTable(filteredProjects, config.baseDir);
+    } else {
+      printTree(filteredProjects, config.baseDir);
+    }
   } catch (error) {
     logger.error((error as Error).message);
     throw error;

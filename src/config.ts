@@ -1,7 +1,7 @@
-import TOML from '@iarna/toml';
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
+import TOML from '@iarna/toml';
 
 export interface HostConfig {
   alias: string;

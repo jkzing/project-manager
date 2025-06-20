@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
 
 interface ProjectInfo {
   hostname: string;
@@ -34,7 +34,7 @@ export async function saveProjectInfo(projectInfo: ProjectInfo) {
 
   // Check if project already exists
   const existingIndex = projects.findIndex(
-    (p) => p.owner === projectInfo.owner && p.repo === projectInfo.repo
+    (p) => p.owner === projectInfo.owner && p.repo === projectInfo.repo,
   );
 
   if (existingIndex >= 0) {
@@ -46,16 +46,18 @@ export async function saveProjectInfo(projectInfo: ProjectInfo) {
   await fs.writeFile(cacheFile, JSON.stringify(projects, null, 2));
 }
 
-export async function getProjectInfo(hostname: string, owner: string, repo: string): Promise<ProjectInfo | null> {
+export async function getProjectInfo(
+  hostname: string,
+  owner: string,
+  repo: string,
+): Promise<ProjectInfo | null> {
   const cacheFile = getHostCacheFile(hostname);
 
   try {
     const content = await fs.readFile(cacheFile, 'utf-8');
     const projects: ProjectInfo[] = JSON.parse(content);
 
-    return projects.find(
-      (p) => p.owner === owner && p.repo === repo
-    ) || null;
+    return projects.find((p) => p.owner === owner && p.repo === repo) || null;
   } catch (error) {
     return null;
   }

@@ -2,8 +2,8 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import simpleGit from 'simple-git';
 import { getConfig } from '../config';
-import { logger } from '../utils/logger';
 import { saveProjectInfo } from '../utils/cache';
+import { logger } from '../utils/logger';
 
 // Common directories to ignore during scanning
 const IGNORED_DIRS = [
@@ -43,7 +43,8 @@ async function getGitRepoInfo(dirPath: string) {
     }
 
     // Parse remote URL to get hostname, owner, and repo
-    const urlPattern = /(?:https?:\/\/|git@)([^/:]+)[/:]([^/]+)\/([^/]+?)(?:\.git)?$/;
+    const urlPattern =
+      /(?:https?:\/\/|git@)([^/:]+)[/:]([^/]+)\/([^/]+?)(?:\.git)?$/;
     const match = remote.trim().match(urlPattern);
 
     if (!match) {
@@ -62,10 +63,12 @@ async function scanDirectory(
   currentDepth: number,
   maxDepth: number,
   options: ScanOptions,
-): Promise<void> {
+): Promise<number> {
   if (currentDepth > maxDepth) {
-    return;
+    return 0;
   }
+
+  let foundRepos = 0;
 
   try {
     const entries = await fs.readdir(dirPath, { withFileTypes: true });
@@ -93,20 +96,31 @@ async function scanDirectory(
             }
 
             logger.info(`Found: ${owner}/${repo}`);
+            foundRepos++;
           }
           // If it's already a git repository, don't recursively scan its subdirectories
           continue;
         }
 
         // Continue scanning subdirectories
-        await scanDirectory(fullPath, currentDepth + 1, maxDepth, options);
+        foundRepos += await scanDirectory(
+          fullPath,
+          currentDepth + 1,
+          maxDepth,
+          options,
+        );
       }
     }
   } catch (error) {
-    throw new Error(`Error scanning directory ${dirPath}: ${(error as Error).message}`, {
-      cause: error,
-    });
+    throw new Error(
+      `Error scanning directory ${dirPath}: ${(error as Error).message}`,
+      {
+        cause: error,
+      },
+    );
   }
+
+  return foundRepos;
 }
 
 export async function scan(targetDir: string, options: ScanOptions = {}) {
@@ -117,22 +131,21 @@ export async function scan(targetDir: string, options: ScanOptions = {}) {
       logger.warn('Dry run mode - no changes will be made');
     }
 
-    await logger.group('Directory Scan', async () => {
-      logger.info(`Scanning directory: ${targetDir}`);
-      logger.info(`Maximum depth: ${depth}`);
+    logger.info(`Scanning directory: ${targetDir}`);
+    logger.info(`Maximum depth: ${depth}`);
 
-      const config = await getConfig();
-      const absolutePath = path.resolve(targetDir);
+    const config = await getConfig();
+    const absolutePath = path.resolve(targetDir);
 
-      let foundRepos = 0;
-      await scanDirectory(absolutePath, 0, depth, options);
+    const foundRepos = await scanDirectory(absolutePath, 0, depth, options);
 
-      if (dryRun) {
-        logger.success('Dry run completed successfully!');
-      } else {
-        logger.success(`Scan completed successfully! Found ${foundRepos} repositories.`);
-      }
-    });
+    if (dryRun) {
+      logger.success('Dry run completed successfully!');
+    } else {
+      logger.success(
+        `Scan completed successfully! Found ${foundRepos} repositories.`,
+      );
+    }
   } catch (error) {
     logger.error((error as Error).message);
     throw error;

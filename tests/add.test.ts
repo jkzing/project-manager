@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { add } from '../src/commands/add';
-import * as config from '../src/config';
-import simpleGit from 'simple-git';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import simpleGit from 'simple-git';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { add } from '../src/commands/add';
+import * as config from '../src/config';
 
 // Mock dependencies
 vi.mock('simple-git');

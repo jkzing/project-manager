@@ -1,16 +1,25 @@
-import { getAllProjects } from '../utils/cache';
-import { logger } from '../utils/logger';
-import inquirer from 'inquirer';
 import path from 'node:path';
 import chalk from 'chalk';
 import clipboardy from 'clipboardy';
+import inquirer from 'inquirer';
+import { getAllProjects } from '../utils/cache';
+import { logger } from '../utils/logger';
 
-function matchProject(project: { hostname: string; owner: string; repo: string; path: string }, keyword: string): boolean {
-  const searchText = `${project.hostname} ${project.owner} ${project.repo}`.toLowerCase();
+function matchProject(
+  project: { hostname: string; owner: string; repo: string; path: string },
+  keyword: string,
+): boolean {
+  const searchText =
+    `${project.hostname} ${project.owner} ${project.repo}`.toLowerCase();
   return searchText.includes(keyword.toLowerCase());
 }
 
-function formatProjectChoice(project: { hostname: string; owner: string; repo: string; path: string }): string {
+function formatProjectChoice(project: {
+  hostname: string;
+  owner: string;
+  repo: string;
+  path: string;
+}): string {
   return `${chalk.cyan(project.hostname)}/${chalk.yellow(project.owner)}/${chalk.green(project.repo)}`;
 }
 
@@ -34,19 +43,23 @@ export async function go(keyword: string) {
     const projects = await getAllProjects();
 
     if (projects.length === 0) {
-      logger.warn('No projects found. Please add some projects first using "vpm add" or "vpm scan"');
+      logger.warn(
+        'No projects found. Please add some projects first using "vpm add" or "vpm scan"',
+      );
       return;
     }
 
     // Filter projects that match the keyword
-    const matchedProjects = projects.filter(project => matchProject(project, keyword));
+    const matchedProjects = projects.filter((project) =>
+      matchProject(project, keyword),
+    );
 
     if (matchedProjects.length === 0) {
       logger.warn(`No projects found matching "${keyword}"`);
       logger.info('Available projects:');
-      projects.forEach(project => {
+      for (const project of projects) {
         logger.info(`  ${formatProjectChoice(project)}`);
-      });
+      }
       process.exit(1);
     }
 
@@ -59,9 +72,11 @@ export async function go(keyword: string) {
       await outputCdCommand(project.path);
     } else {
       // Multiple matches, show selection
-      logger.info(`Found ${matchedProjects.length} projects matching "${keyword}":`);
+      logger.info(
+        `Found ${matchedProjects.length} projects matching "${keyword}":`,
+      );
 
-      const choices = matchedProjects.map(project => ({
+      const choices = matchedProjects.map((project) => ({
         name: `${formatProjectChoice(project)} (${project.path})`,
         value: project,
       }));

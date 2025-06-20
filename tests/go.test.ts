@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getAllProjects } from '../src/utils/cache';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { go } from '../src/commands/go';
+import { getAllProjects } from '../src/utils/cache';
 
 // Mock dependencies
 vi.mock('../src/utils/cache');
@@ -88,7 +88,9 @@ describe('go command', () => {
     await go('my-repo');
 
     expect(mockGetAllProjects).toHaveBeenCalled();
-    expect(process.stdout.write).toHaveBeenCalledWith('cd "/path/to/my-repo"\n');
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      'cd "/path/to/my-repo"\n',
+    );
   });
 
   it('should show selection when multiple projects match', async () => {
@@ -121,7 +123,9 @@ describe('go command', () => {
 
     expect(mockGetAllProjects).toHaveBeenCalled();
     expect(mockPrompt).toHaveBeenCalled();
-    expect(process.stdout.write).toHaveBeenCalledWith('cd "/path/to/my-repo"\n');
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      'cd "/path/to/my-repo"\n',
+    );
   });
 
   it('should match projects case-insensitively', async () => {

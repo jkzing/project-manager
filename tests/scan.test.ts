@@ -1,12 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { scan } from '../src/commands/scan';
-import * as config from '../src/config';
-import simpleGit from 'simple-git';
+import type { Dirent } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { saveProjectInfo } from '../src/utils/cache';
-import { Dirent } from 'node:fs';
 import { afterEach } from 'node:test';
+import simpleGit from 'simple-git';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { scan } from '../src/commands/scan';
+import * as config from '../src/config';
+import { saveProjectInfo } from '../src/utils/cache';
 
 // Mock dependencies
 vi.mock('simple-git');
@@ -64,7 +64,9 @@ describe('scan command', () => {
     ];
 
     vi.mocked(fs.readdir).mockResolvedValueOnce(mockEntries);
-    vi.mocked(fs.stat).mockResolvedValueOnce({ isDirectory: () => true } as any);
+    vi.mocked(fs.stat).mockResolvedValueOnce({
+      isDirectory: () => true,
+    } as any);
 
     await scan('/test/dir');
 
@@ -78,14 +80,12 @@ describe('scan command', () => {
   });
 
   it('should respect max depth option', async () => {
-    const mockEntries: Dirent[] = [
-      createMockDirent('subdir'),
-    ];
+    const mockEntries: Dirent[] = [createMockDirent('subdir')];
 
     vi.mocked(fs.readdir)
       .mockResolvedValueOnce(mockEntries)
       .mockResolvedValueOnce([]);
-      vi.mocked(fs.stat).mockResolvedValue({ isDirectory: () => false } as any);
+    vi.mocked(fs.stat).mockResolvedValue({ isDirectory: () => false } as any);
 
     await scan('/test/dir', { depth: 1 });
 
@@ -117,7 +117,9 @@ describe('scan command', () => {
     ];
 
     vi.mocked(fs.readdir).mockResolvedValueOnce(mockEntries);
-    vi.mocked(fs.stat).mockResolvedValueOnce({ isDirectory: () => true } as any);
+    vi.mocked(fs.stat).mockResolvedValueOnce({
+      isDirectory: () => true,
+    } as any);
 
     await scan('/test/dir', { dryRun: true });
 
@@ -126,12 +128,12 @@ describe('scan command', () => {
   });
 
   it('should handle non-git directories gracefully', async () => {
-    const mockEntries: Dirent[] = [
-      createMockDirent('regular-dir'),
-    ];
+    const mockEntries: Dirent[] = [createMockDirent('regular-dir')];
 
     vi.mocked(fs.readdir).mockResolvedValueOnce(mockEntries);
-    vi.mocked(fs.stat).mockResolvedValueOnce({ isDirectory: () => false } as any);
+    vi.mocked(fs.stat).mockResolvedValueOnce({
+      isDirectory: () => false,
+    } as any);
 
     await scan('/test/dir');
 

@@ -1,8 +1,8 @@
 import { program } from 'commander';
 import { add } from './commands/add';
-import { scan } from './commands/scan';
-import { list } from './commands/list';
 import { go } from './commands/go';
+import { list } from './commands/list';
+import { scan } from './commands/scan';
 
 export function runCli() {
   program
@@ -23,7 +23,10 @@ export function runCli() {
     .description('Scan a directory for Git repositories')
     .argument('<dir>', 'Directory to scan')
     .option('-d, --depth <number>', 'Maximum directory depth to scan', '5')
-    .option('--dry-run', 'Show what would be done without actually adding to cache')
+    .option(
+      '--dry-run',
+      'Show what would be done without actually adding to cache',
+    )
     .action(scan);
 
   program

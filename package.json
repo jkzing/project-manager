@@ -1,6 +1,6 @@
 {
   "name": "@v3b/project-manager",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "exports": {
     ".": {
@@ -18,7 +18,10 @@
   "engines": {
     "node": ">=20"
   },
-  "files": ["bin", "dist"],
+  "files": [
+    "bin",
+    "dist"
+  ],
   "scripts": {
     "build": "rslib build",
     "check": "biome check --write",

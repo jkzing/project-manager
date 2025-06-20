@@ -1,6 +1,6 @@
 # @v3b/project-manager
 
-Local Project Manager - A tool to manage local projects.
+A tool to manage your local projects.
 
 <br>
 
@@ -80,6 +80,92 @@ vpm go repo
 - `vpm go repo` - If multiple projects contain "repo" in their name, shows an interactive selection menu
 
 The search is case-insensitive and matches against hostname, owner, and repository name.
+
+## Configuration
+
+The project manager uses a TOML configuration file located at `~/.vpm.toml` to customize its behavior. If no configuration file exists, default settings will be used.
+
+### Configuration File Structure
+
+```toml
+# Base directory for all projects (default: ~/workspace)
+baseDir = "~/workspace"
+
+# Host configurations
+[host]
+  # GitHub configuration
+  [host.github]
+    alias = "gh"
+    hostname = "github.com"
+    baseDir = "github"  # Optional: subdirectory under baseDir
+    preferSSH = true    # Optional: prefer SSH over HTTPS
+
+  # GitLab configuration
+  [host.gitlab]
+    alias = "gl"
+    hostname = "gitlab.com"
+    baseDir = "gitlab"
+    preferSSH = true
+
+  # Custom Git host configuration
+  [host.custom]
+    alias = "custom"
+    hostname = "git.example.com"
+    baseDir = "custom"
+    preferSSH = false
+```
+
+### Configuration Options
+
+#### Global Options
+
+- **`baseDir`** (string): The base directory where all projects will be stored. Defaults to `~/workspace`.
+
+#### Host Configuration
+
+Each host configuration supports the following options:
+
+- **`alias`** (string): Short alias for the host (e.g., `gh` for GitHub). Used in commands like `vpm add gh:owner/repo`.
+- **`hostname`** (string): The Git host's domain name (e.g., `github.com`).
+- **`baseDir`** (string, optional): Subdirectory under the global `baseDir` for this host's projects. If not specified, uses `{baseDir}/{hostname}`.
+- **`preferSSH`** (boolean, optional): Whether to prefer SSH URLs over HTTPS when cloning. Defaults to `true` for GitHub and GitLab.
+
+### Default Configuration
+
+If no configuration file is found, the following defaults are used:
+
+```toml
+baseDir = "~/workspace"
+
+[host.github]
+alias = "gh"
+hostname = "github.com"
+preferSSH = true
+
+[host.gitlab]
+alias = "gl"
+hostname = "gitlab.com"
+preferSSH = true
+```
+
+### Project Directory Structure
+
+With the default configuration, projects are organized as follows:
+
+```
+~/workspace/
+├── github.com/
+│   ├── owner1/
+│   │   ├── repo1/
+│   │   └── repo2/
+│   └── owner2/
+│       └── repo3/
+└── gitlab.com/
+    └── owner3/
+        └── repo4/
+```
+
+You can customize this structure by setting different `baseDir` values for each host in your configuration file.
 
 ## Installation
 
